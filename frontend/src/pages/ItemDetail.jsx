@@ -11,7 +11,7 @@ function ItemDetail() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/items/${id}`)
+    axios.get(`https://campus-lost-and-found-api-y6d2.onrender.com/api/items/${id}`)
       .then(response => {
         setItem(response.data);
         setLoading(false);
@@ -35,7 +35,7 @@ function ItemDetail() {
 
     try {
       await axios.post(
-        'http://localhost:3000/api/claims',
+        'https://campus-lost-and-found-api-y6d2.onrender.com/api/claims',
         {
           item_id: id,
           proof_description: proof

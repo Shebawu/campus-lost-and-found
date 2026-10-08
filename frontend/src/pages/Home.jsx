@@ -7,7 +7,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/items')
+    axios.get('https://campus-lost-and-found-api-y6d2.onrender.com/api/items')
       .then(response => {
         setItems(response.data);
         setLoading(false);

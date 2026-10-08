@@ -28,7 +28,7 @@ function ReportItem() {
 
     try {
       await axios.post(
-        'http://localhost:3000/api/items',
+        'https://campus-lost-and-found-api-y6d2.onrender.com/api/items',
         {
           title,
           description,
