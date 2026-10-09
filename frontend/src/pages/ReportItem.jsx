@@ -8,6 +8,7 @@ function ReportItem() {
   const [type, setType] = useState('lost');
   const [location, setLocation] = useState('');
   const [categoryId, setCategoryId] = useState(1);
+  const [image, setImage] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -26,20 +27,25 @@ function ReportItem() {
 
     const token = localStorage.getItem('token');
 
-    try {
+        try {
+      // Use FormData to send both text and image file
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('type', type);
+      formData.append('location', location);
+      formData.append('category_id', categoryId);
+      if (image) {
+        formData.append('image', image);
+      }
+
       await axios.post(
         'https://campus-lost-and-found-api-y6d2.onrender.com/api/items',
-        {
-          title,
-          description,
-          type,
-          location,
-          category_id: parseInt(categoryId),
-          image_url: null
-        },
+        formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
           }
         }
       );
@@ -94,7 +100,15 @@ function ReportItem() {
             <option value="6">Others</option>
           </select>
         </div>
-
+        <div>
+          <label style={{ display: 'block', marginBottom: '5px', color: '#555' }}>Photo (Optional)</label>
+          <input 
+            type="file" 
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])} 
+            style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', fontSize: '16px', background: 'white' }}
+          />
+        </div>
         <button type="submit" style={{ padding: '12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', cursor: 'pointer' }}>
           Submit Report
         </button>

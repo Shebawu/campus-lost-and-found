@@ -1,14 +1,34 @@
 import { Request, Response } from 'express';
 import pool from '../config/db';
+import cloudinary from '../config/cloudinary';
+import { AuthRequest } from '../middleware/auth';
 
 // 1. CREATE A NEW ITEM (Report a Lost or Found item)
-export const createItem = async (req: Request, res: Response) => {
+export const createItem = async (req: AuthRequest, res: Response) => {
   try {
-    const { reported_by, category_id, title, description, type, location, image_url } = req.body;
+    const userId = req.user?.id;
+    const { category_id, title, description, type, location } = req.body;
+
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'campus_lost_found' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(req.file!.buffer);
+      });
+
+      imageUrl = result.secure_url;
+    }
 
     const newItem = await pool.query(
       'INSERT INTO items (reported_by, category_id, title, description, type, location, image_url) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [reported_by, category_id, title, description, type, location, image_url]
+      [userId, category_id, title, description, type, location, imageUrl]
     );
 
     res.status(201).json({ message: 'Item reported successfully!', item: newItem.rows[0] });
@@ -17,6 +37,7 @@ export const createItem = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error while creating item' });
   }
 };
+
 // 2. GET ALL ITEMS (with optional filter for lost/found)
 export const getAllItems = async (req: Request, res: Response) => {
   try {

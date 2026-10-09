@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
 
 // Extend the Express Request type to include our 'user' property
 export interface AuthRequest extends Request {
@@ -7,6 +8,7 @@ export interface AuthRequest extends Request {
     id: string;
     role: string;
   };
+  file?: Express.Multer.File;
 }
 
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {

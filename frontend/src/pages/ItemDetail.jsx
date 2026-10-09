@@ -64,6 +64,15 @@ function ItemDetail() {
       
       <div style={{ border: '1px solid #ddd', padding: '25px', borderRadius: '8px', marginTop: '20px', backgroundColor: '#f9f9f9' }}>
         <h1 style={{ marginTop: 0 }}>{item.title}</h1>
+        {/* 🆕 Show the image if one exists */}
+  {item.image_url && (
+    <img 
+      src={item.image_url} 
+      alt={item.title} 
+      style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '8px', marginBottom: '15px', backgroundColor: '#fff' }} 
+    />
+  )}
+
         <p><strong>Type:</strong> <span style={{ color: item.type === 'lost' ? 'red' : 'green', fontWeight: 'bold' }}>{item.type.toUpperCase()}</span></p>
         <p><strong>Location:</strong> {item.location}</p>
         <p><strong>Description:</strong> {item.description}</p>

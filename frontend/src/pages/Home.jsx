@@ -41,6 +41,14 @@ function Home() {
            <Link to={`/items/${item.id}`} key={item.id} style={{ textDecoration: 'none', color: 'inherit' }}>
              <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', backgroundColor: '#f9f9f9', cursor: 'pointer' }}>
                  <h3 style={{ margin: '0 0 10px 0' }}>{item.title}</h3>
+                 {/* 🆕 Show the image if one exists */}
+  {item.image_url && (
+    <img 
+      src={item.image_url} 
+      alt={item.title} 
+      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '5px', marginBottom: '10px' }} 
+    />
+  )}
                  <p style={{ margin: '5px 0' }}><strong>Type:</strong> <span style={{ color: item.type === 'lost' ? 'red' : 'green' }}>{item.type.toUpperCase()}</span></p>
                  <p style={{ margin: '5px 0' }}><strong>Location:</strong> {item.location}</p>
                  <p style={{ margin: '5px 0' }}><strong>Description:</strong> {item.description}</p>
