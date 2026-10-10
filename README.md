@@ -13,7 +13,7 @@ A full-stack web application that helps university students report lost items, p
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home Page](screenshots/home.png)
+![Home Page](screenshots/homepage.png)
 
 ### 📝 Report an Item
 ![Report Item](screenshots/report-item.png)
