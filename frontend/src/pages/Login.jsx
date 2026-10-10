@@ -24,8 +24,12 @@ function Login() {
 
       alert('Login successful! Welcome back.');
       
-      // Send the user back to the home page
-      navigate('/');
+      // Redirect admins to the dashboard, and everyone else to the homepage
+if (response.data.user.role === 'admin') {
+  navigate('/admin');
+} else {
+  navigate('/');
+}
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
