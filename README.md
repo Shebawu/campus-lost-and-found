@@ -59,25 +59,14 @@ A full-stack web application that helps university students report lost items, p
 | **Backend Hosting** | Render |
 
 ---
-
 ## 🏗️ Architecture
-┌─────────────────────────────────────────┐
-│ React Frontend (Vercel) │
-│ • Home • Login • Report • Admin │
-└──────────────────┬──────────────────────┘
-│ HTTP (Axios)
-▼
-┌─────────────────────────────────────────┐
-│ Node.js + Express API (Render) │
-│ • Auth • Items • Claims • Admin │
-└──────┬──────────────────────┬───────────┘
-│ │
-▼ ▼
-┌─────────────┐ ┌───────────────┐
-│ PostgreSQL │ │ Cloudinary │
-│ (Neon) │ │ (Image CDN) │
-└─────────────┘ └───────────────┘
 
+```mermaid
+graph TD
+    A[React Frontend<br/>Vercel] -->|HTTP / Axios| B[Node.js + Express API<br/>Render]
+    B --> C[(PostgreSQL<br/>Neon)]
+    B --> D[Cloudinary<br/>Image CDN]
+```
 
 ---
 
