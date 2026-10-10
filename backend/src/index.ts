@@ -5,6 +5,7 @@ import  pool  from './config/db';
 import itemRoutes from './routes/itemRoute';
 import userRoutes from './routes/userRoutes';
 import claimRoutes from './routes/claimRoutes';
+import adminRoutes from './routes/adminRoutes';
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,8 @@ app.use('/api/users', userRoutes);
 // Health Check Route
 // Claim Routes
 app.use('/api/claims', claimRoutes);
+// Admin Routes
+app.use('/api/admin', adminRoutes);
 app.get('/api/health', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
