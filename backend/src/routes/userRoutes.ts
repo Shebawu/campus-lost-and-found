@@ -1,12 +1,15 @@
 import express from 'express';
-import { registerUser, loginUser } from '../controllers/userController';
+import { registerUser, loginUser, getMyItems, getMyClaims } from '../controllers/userController';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
-// Route to register a new user
+// Public routes
 router.post('/register', registerUser);
-
-// Route to login
 router.post('/login', loginUser);
+
+// Protected routes (require login)
+router.get('/me/items', authenticateToken, getMyItems);
+router.get('/me/claims', authenticateToken, getMyClaims);
 
 export default router;
