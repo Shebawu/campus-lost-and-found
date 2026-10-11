@@ -27,6 +27,12 @@ A full-stack web application that helps university students report lost items, p
 ### 🛡️ Admin Dashboard
 ![Admin Dashboard](screenshots/admin-dashboard.png)
 
+### 📝 Register Page
+![Register](screenshots/register.png)
+
+### 🔍 Search & Filter
+![Search and Filter](screenshots/homepage-with-search.png)
+
 ---
 ## ✨ Features
 
