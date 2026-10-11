@@ -38,17 +38,37 @@ export const createItem = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// 2. GET ALL ITEMS (with optional filter for lost/found)
+// 2. GET ALL ITEMS (with optional search and filters)
 export const getAllItems = async (req: Request, res: Response) => {
   try {
-    const { type } = req.query;
-    
-    let query = 'SELECT * FROM items';
-    let values: any[] = [];
+    const { type, search, category_id } = req.query;
 
+    // Build the query dynamically based on what filters are provided
+    let query = 'SELECT * FROM items';
+    const conditions: string[] = [];
+    const values: any[] = [];
+
+    // Filter by type (lost/found)
     if (type) {
-      query += ' WHERE type = $1';
       values.push(type);
+      conditions.push(`type = $${values.length}`);
+    }
+
+    // Filter by category
+    if (category_id) {
+      values.push(category_id);
+      conditions.push(`category_id = $${values.length}`);
+    }
+
+    // Search in title OR description
+    if (search) {
+      values.push(`%${search}%`);
+      conditions.push(`(title ILIKE $${values.length} OR description ILIKE $${values.length})`);
+    }
+
+    // Combine conditions with AND
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
     }
 
     query += ' ORDER BY date_reported DESC';
