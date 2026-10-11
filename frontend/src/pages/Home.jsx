@@ -11,7 +11,6 @@ function Home() {
   const [typeFilter, setTypeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
-  // Fetch items whenever any filter changes
   useEffect(() => {
     fetchItems();
   }, [typeFilter, categoryFilter]);
@@ -19,7 +18,6 @@ function Home() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      // Build the URL with query parameters
       const params = new URLSearchParams();
       if (typeFilter) params.append('type', typeFilter);
       if (categoryFilter) params.append('category_id', categoryFilter);
@@ -43,7 +41,6 @@ function Home() {
     setSearch('');
     setTypeFilter('');
     setCategoryFilter('');
-    // Manually fetch since state changes won't trigger useEffect immediately
     setTimeout(() => fetchItems(), 100);
   };
 
@@ -52,10 +49,29 @@ function Home() {
       <h1 style={{ textAlign: 'center', color: '#333' }}>🎓 Campus Lost & Found</h1>
       <p style={{ textAlign: 'center', color: '#666' }}>Find what you lost. Return what you found.</p>
 
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
-        <Link to="/login" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Login</Link>
-        <Link to="/register" style={{ padding: '10px 20px', backgroundColor: '#6f42c1', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Register</Link>
-        <Link to="/report" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Report Item</Link>
+      {/* Buttons section - show My Dashboard if logged in, else Login/Register */}
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+        {localStorage.getItem('token') ? (
+          <>
+            <Link to="/dashboard" style={{ padding: '10px 20px', backgroundColor: '#6f42c1', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>👤 My Dashboard</Link>
+            <Link to="/report" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Report Item</Link>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+              }}
+              style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px' }}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Login</Link>
+            <Link to="/register" style={{ padding: '10px 20px', backgroundColor: '#6f42c1', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Register</Link>
+            <Link to="/report" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Report Item</Link>
+          </>
+        )}
       </div>
 
       {/* Search and Filter Bar */}
