@@ -1,0 +1,122 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ApiService {
+  // Your live backend URL
+  static const String baseUrl = 'https://campus-lost-and-found-api-y6d2.onrender.com';
+
+  // ============ AUTH ============
+
+  // Login and get a JWT token
+  static Future<Map<String, dynamic>> login(String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/users/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // Save the token and user info locally
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', data['token']);
+      await prefs.setString('user', jsonEncode(data['user']));
+      return {'success': true, 'data': data};
+    } else {
+      return {'success': false, 'error': data['error'] ?? 'Login failed'};
+    }
+  }
+
+  // Register a new user
+  static Future<Map<String, dynamic>> register(String name, String email, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/users/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'name': name, 'email': email, 'password': password}),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      return {'success': true, 'data': data};
+    } else {
+      return {'success': false, 'error': data['error'] ?? 'Registration failed'};
+    }
+  }
+
+  // Logout (clear stored data)
+  static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('user');
+  }
+
+  // Check if the user is logged in
+  static Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') != null;
+  }
+
+  // Get the stored token
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+    // ============ ITEMS ============
+
+  // Get all items from the backend
+  static Future<List<dynamic>> getItems() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/items'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load items');
+    }
+  }
+    // Get a single item by ID
+  static Future<Map<String, dynamic>> getItemById(String id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/items/$id'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load item');
+    }
+  }
+
+  // Submit a claim for a found item
+  static Future<Map<String, dynamic>> submitClaim(String itemId, String proof) async {
+    final token = await getToken();
+    if (token == null) {
+      return {'success': false, 'error': 'You must be logged in'};
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/claims'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'item_id': itemId,
+        'proof_description': proof,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      return {'success': true, 'data': data};
+    } else {
+      return {'success': false, 'error': data['error'] ?? 'Failed to submit claim'};
+    }
+  }
+
+}
