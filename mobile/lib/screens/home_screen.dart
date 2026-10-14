@@ -53,6 +53,13 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'My Dashboard',
+            onPressed: () {
+              Navigator.pushNamed(context, '/dashboard');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchItems,
           ),
@@ -83,12 +90,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Will navigate to Report Item screen later
+            floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.pushNamed(context, '/report');
+          _fetchItems();
         },
         backgroundColor: const Color(0xFF28A745),
-        child: const Icon(Icons.add, color: Colors.white),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          'Report',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

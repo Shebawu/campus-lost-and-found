@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   // Your live backend URL
   static const String baseUrl = 'https://campus-lost-and-found-api-y6d2.onrender.com';
-
   // ============ AUTH ============
 
   // Login and get a JWT token
@@ -116,6 +115,78 @@ class ApiService {
       return {'success': true, 'data': data};
     } else {
       return {'success': false, 'error': data['error'] ?? 'Failed to submit claim'};
+    }
+  }
+  // Report a new item with optional photo
+  static Future<Map<String, dynamic>> reportItem({
+    required String title,
+    required String description,
+    required String type,
+    required String location,
+    required int categoryId,
+    String? imagePath,
+  }) async {
+    final token = await getToken();
+    if (token == null) {
+      return {'success': false, 'error': 'You must be logged in'};
+    }
+
+    final uri = Uri.parse('$baseUrl/api/items');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.headers['Authorization'] = 'Bearer $token';
+
+    request.fields['title'] = title;
+    request.fields['description'] = description;
+    request.fields['type'] = type;
+    request.fields['location'] = location;
+    request.fields['category_id'] = categoryId.toString();
+
+    if (imagePath != null) {
+      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      return {'success': true, 'data': data};
+    } else {
+      return {'success': false, 'error': data['error'] ?? 'Failed to report item'};
+    }
+  }
+  // Get my reported items
+  static Future<List<dynamic>> getMyItems() async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not logged in');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/users/me/items'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load your items');
+    }
+  }
+
+  // Get my submitted claims
+  static Future<List<dynamic>> getMyClaims() async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not logged in');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/users/me/claims'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load your claims');
     }
   }
 

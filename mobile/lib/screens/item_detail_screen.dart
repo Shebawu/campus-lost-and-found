@@ -39,7 +39,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   void _showClaimDialog() {
-    final _proofController = TextEditingController();
+    final proofController = TextEditingController();
 
     showDialog(
       context: context,
@@ -54,7 +54,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             ),
             const SizedBox(height: 12),
             TextField(
-              controller: _proofController,
+              controller: proofController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Enter your proof of ownership...',
@@ -72,11 +72,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_proofController.text.trim().isEmpty) return;
+              if (proofController.text.trim().isEmpty) return;
 
               final result = await ApiService.submitClaim(
                 widget.itemId,
-                _proofController.text.trim(),
+                proofController.text.trim(),
               );
 
               if (!mounted) return;
@@ -138,7 +138,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 item['image_url'],
                 height: 280,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: 280,
                   color: Colors.grey[300],
                   child: const Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
