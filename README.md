@@ -33,6 +33,23 @@ A full-stack web application that helps university students report lost items, p
 ### 🔍 Search & Filter
 ![Search and Filter](screenshots/homepage-with-search.png)
 
+## 📱 Mobile App (Flutter)
+
+### 🔐 Mobile Login
+![Mobile Login](screenshots/mobile/mobile-login.png)
+
+### 🏠 Mobile Home — Item List
+![Mobile Home](screenshots/mobile/mobile-home.png)
+
+### 📝 Report Item Form
+![Mobile Report](screenshots/mobile/mobile-report.png)
+
+### 👤 My Dashboard
+![Mobile Dashboard](screenshots/mobile/mobile-dashboard.png)
+
+### 📋 Item Detail & Claim
+![Mobile Item Detail](screenshots/mobile/mobile-item-detail.png)
+
 ---
 ## ✨ Features
 
@@ -56,13 +73,18 @@ A full-stack web application that helps university students report lost items, p
 
 | Layer | Technology |
 | :--- | :--- |
-| **Frontend** | React + Vite, React Router, Axios |
+| **Web Frontend** | React + Vite, React Router, Axios |
+| **Mobile App** | Flutter 3.x, Dart |
+| **Mobile State** | Provider |
+| **Mobile Storage** | SharedPreferences |
+| **Mobile Camera** | image_picker |
 | **Backend** | Node.js, Express, TypeScript |
 | **Database** | PostgreSQL (Neon) |
 | **Auth** | JWT + bcryptjs |
 | **File Storage** | Cloudinary |
 | **Frontend Hosting** | Vercel |
 | **Backend Hosting** | Render |
+| **Mobile Build** | Flutter CLI (Android SDK) |
 
 ---
 ## 🏗️ Architecture
