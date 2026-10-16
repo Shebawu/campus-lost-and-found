@@ -6,6 +6,7 @@ import itemRoutes from './routes/itemRoute';
 import userRoutes from './routes/userRoutes';
 import claimRoutes from './routes/claimRoutes';
 import adminRoutes from './routes/adminRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 dotenv.config();
 
 const app = express();
@@ -21,6 +22,8 @@ app.use('/api/users', userRoutes);
 // Health Check Route
 // Claim Routes
 app.use('/api/claims', claimRoutes);
+// Notification Routes
+app.use('/api/notifications', notificationRoutes);
 // Admin Routes
 app.use('/api/admin', adminRoutes);
 app.get('/api/health', async (req, res) => {

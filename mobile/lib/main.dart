@@ -5,6 +5,7 @@ import 'screens/register_screen.dart';
 import 'screens/item_detail_screen.dart';
 import 'screens/report_item_screen.dart';
 import 'screens/my_dashboard_screen.dart';
+import 'screens/notifications_screen.dart';
 
 void main() {
   runApp(const CampusLostFoundApp());
@@ -29,6 +30,7 @@ class CampusLostFoundApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/report': (context) => const ReportItemScreen(),
         '/dashboard': (context) => const MyDashboardScreen(),
+        '/notifications': (context) => const NotificationsScreen(),
       },
             onGenerateRoute: (settings) {
         if (settings.name == '/item-detail') {

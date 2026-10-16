@@ -201,5 +201,62 @@ class ApiService {
       throw Exception('Failed to load your claims');
     }
   }
+  // ============ NOTIFICATIONS ============
 
+  // Get all notifications for the current user
+  static Future<List<dynamic>> getNotifications() async {
+    final token = await getToken();
+    if (token == null) throw Exception('Not logged in');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/notifications'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load notifications');
+    }
+  }
+
+  // Get unread count
+  static Future<int> getUnreadCount() async {
+    final token = await getToken();
+    if (token == null) return 0;
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/notifications/unread-count'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['count'] ?? 0;
+    } else {
+      return 0;
+    }
+  }
+
+  // Mark a notification as read
+  static Future<void> markNotificationAsRead(String id) async {
+    final token = await getToken();
+    if (token == null) return;
+
+    await http.put(
+      Uri.parse('$baseUrl/api/notifications/$id/read'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+  }
+
+  // Mark all as read
+  static Future<void> markAllNotificationsAsRead() async {
+    final token = await getToken();
+    if (token == null) return;
+
+    await http.put(
+      Uri.parse('$baseUrl/api/notifications/read-all'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+  }
 }

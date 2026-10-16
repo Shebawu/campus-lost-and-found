@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import pool from '../config/db';
 import { AuthRequest } from '../middleware/auth';
+import { createNotification } from './notificationController';
 
 // 1. CREATE A CLAIM (A student claims a found item)
 export const createClaim = async (req: AuthRequest, res: Response) => {
@@ -23,7 +24,17 @@ export const createClaim = async (req: AuthRequest, res: Response) => {
       'INSERT INTO claims (item_id, claimant_id, proof_description) VALUES ($1, $2, $3) RETURNING *',
       [item_id, claimant_id, proof_description]
     );
-
+        // Notify the item owner
+    const itemOwner = itemCheck.rows[0].reported_by;
+    if (itemOwner) {
+      await createNotification(
+        itemOwner,
+        '📦 Someone claimed your item',
+        `A student submitted a claim for "${itemCheck.rows[0].title}". Review it in the admin panel.`,
+        'claim_submitted',
+        itemCheck.rows[0].id
+      );
+    }
     res.status(201).json({ message: 'Claim submitted successfully!', claim: newClaim.rows[0] });
   } catch (error) {
     console.error(error);

@@ -55,7 +55,53 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('🎓 Campus Lost & Found'),
         backgroundColor: const Color(0xFF007BFF),
         foregroundColor: Colors.white,
-        actions: [
+                actions: [
+                    // 🔔 Bell icon with unread badge
+          FutureBuilder<int>(
+            future: ApiService.getUnreadCount(),
+            builder: (context, snapshot) {
+              final count = snapshot.data ?? 0;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications),
+                    tooltip: 'Notifications',
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, '/notifications');
+                      if (!mounted) return;
+                      setState(() {}); // Refresh badge after coming back
+                    },
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      right: 2,
+                      top: 2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(minWidth: 20, minHeight: 18),
+                        child: Center(
+                          child: Text(
+                            count > 9 ? '9+' : '$count',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              height: 1.1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          // 👤 My Dashboard icon
           IconButton(
             icon: const Icon(Icons.person),
             tooltip: 'My Dashboard',
@@ -63,10 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(context, '/dashboard');
             },
           ),
+          // 🔄 Refresh icon
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchItems,
           ),
+          // 🚪 Logout icon
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _handleLogout,

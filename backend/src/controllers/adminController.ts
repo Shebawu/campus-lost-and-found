@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import pool from '../config/db';
 import { AuthRequest } from '../middleware/auth';
-
+import { createNotification } from './notificationController';
 // 1. GET ALL CLAIMS (with item and claimant details)
 export const getAllClaims = async (req: AuthRequest, res: Response) => {
   try {
@@ -53,7 +53,19 @@ export const updateClaimStatus = async (req: AuthRequest, res: Response) => {
         ['resolved', claim.item_id]
       );
     }
-
+    // Notify the claimant
+    const claim = updatedClaim.rows[0];
+    const isApproved = status === 'approved';
+    
+    await createNotification(
+      claim.claimant_id,
+      isApproved ? '✅ Your claim was approved!' : '❌ Your claim was rejected',
+      isApproved 
+        ? `Great news! Your claim has been approved. Contact the finder to arrange pickup.`
+        : `Unfortunately, your claim was rejected. The proof provided was not sufficient.`,
+      isApproved ? 'claim_approved' : 'claim_rejected',
+      claim.item_id
+    );
     res.json({ message: `Claim ${status} successfully`, claim: updatedClaim.rows[0] });
   } catch (error) {
     console.error(error);
