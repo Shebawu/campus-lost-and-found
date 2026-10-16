@@ -9,20 +9,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<dynamic> _items = [];
+    List<dynamic> _items = [];
   bool _isLoading = true;
-
+  final _searchController = TextEditingController();
+  String _typeFilter = '';
+  int? _categoryFilter;
   @override
   void initState() {
     super.initState();
     _fetchItems();
   }
 
-    Future<void> _fetchItems() async {
+      Future<void> _fetchItems() async {
     setState(() => _isLoading = true);
-    
     try {
-      final response = await ApiService.getItems();
+      final response = await ApiService.getItems(
+        search: _searchController.text.trim(),
+        type: _typeFilter,
+        categoryId: _categoryFilter,
+      );
       if (!mounted) return;
       setState(() {
         _items = response;
@@ -36,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
-
   Future<void> _handleLogout() async {
     await ApiService.logout();
     if (!mounted) return;
@@ -69,27 +73,145 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
-              ? const Center(
-                  child: Text(
-                    'No items reported yet.\nBe the first to report one!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+      
+      body: Column(
+        children: [
+          // ============ SEARCH & FILTER BAR ============
+          Container(
+            padding: const EdgeInsets.all(12),
+            color: Colors.white,
+            child: Column(
+              children: [
+                // Search bar
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by title or description...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _fetchItems();
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _fetchItems,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _items.length,
-                    itemBuilder: (context, index) {
-                      final item = _items[index];
-                      return _ItemCard(item: item);
-                    },
+                  onSubmitted: (_) => _fetchItems(),
+                ),
+                const SizedBox(height: 10),
+
+                // Filter chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      FilterChip(
+                        label: const Text('All'),
+                        selected: _typeFilter.isEmpty,
+                        onSelected: (_) {
+                          setState(() => _typeFilter = '');
+                          _fetchItems();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      FilterChip(
+                        label: const Text('Lost'),
+                        selected: _typeFilter == 'lost',
+                        selectedColor: Colors.red[100],
+                        onSelected: (selected) {
+                          setState(() => _typeFilter = selected ? 'lost' : '');
+                          _fetchItems();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      FilterChip(
+                        label: const Text('Found'),
+                        selected: _typeFilter == 'found',
+                        selectedColor: Colors.green[100],
+                        onSelected: (selected) {
+                          setState(() => _typeFilter = selected ? 'found' : '');
+                          _fetchItems();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _categoryFilter != null
+                                ? Colors.blue
+                                : Colors.grey[300]!,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          color: _categoryFilter != null
+                              ? Colors.blue[50]
+                              : Colors.white,
+                        ),
+                        child: DropdownButton<int?>(
+                          value: _categoryFilter,
+                          hint: const Text('Category'),
+                          underline: const SizedBox(),
+                          icon: const Icon(Icons.arrow_drop_down),
+                          items: const [
+                            DropdownMenuItem(value: null, child: Text('All')),
+                            DropdownMenuItem(value: 1, child: Text('Electronics')),
+                            DropdownMenuItem(value: 2, child: Text('Documents')),
+                            DropdownMenuItem(value: 3, child: Text('Keys')),
+                            DropdownMenuItem(value: 4, child: Text('Bags')),
+                            DropdownMenuItem(value: 5, child: Text('Books')),
+                            DropdownMenuItem(value: 6, child: Text('Others')),
+                          ],
+                          onChanged: (value) {
+                            setState(() => _categoryFilter = value);
+                            _fetchItems();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ],
+            ),
+          ),
+
+          // ============ ITEM LIST ============
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _items.isEmpty
+                    ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Text(
+                            'No items match your search.\nTry different filters.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _fetchItems,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(12),
+                          itemCount: _items.length,
+                          itemBuilder: (context, index) {
+                            final item = _items[index];
+                            return _ItemCard(item: item);
+                          },
+                        ),
+                      ),
+          ),
+        ],
+      ),
+
             floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.pushNamed(context, '/report');

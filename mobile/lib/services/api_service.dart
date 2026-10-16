@@ -65,11 +65,23 @@ class ApiService {
   }
     // ============ ITEMS ============
 
-  // Get all items from the backend
-  static Future<List<dynamic>> getItems() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/items'),
-    );
+    // Get all items with optional search and filters
+  static Future<List<dynamic>> getItems({
+    String? search,
+    String? type,
+    int? categoryId,
+  }) async {
+    // Build query parameters
+    final params = <String, String>{};
+    if (search != null && search.isNotEmpty) params['search'] = search;
+    if (type != null && type.isNotEmpty) params['type'] = type;
+    if (categoryId != null) params['category_id'] = categoryId.toString();
+
+    // Build URL with query string
+    final uri = Uri.parse('$baseUrl/api/items')
+        .replace(queryParameters: params.isEmpty ? null : params);
+
+    final response = await http.get(uri);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
