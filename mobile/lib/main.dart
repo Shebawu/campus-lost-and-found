@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/register_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/item_detail_screen.dart';
 import 'screens/report_item_screen.dart';
 import 'screens/my_dashboard_screen.dart';
@@ -32,7 +32,7 @@ class CampusLostFoundApp extends StatelessWidget {
         '/dashboard': (context) => const MyDashboardScreen(),
         '/notifications': (context) => const NotificationsScreen(),
       },
-            onGenerateRoute: (settings) {
+      onGenerateRoute: (settings) {
         if (settings.name == '/item-detail') {
           final itemId = settings.arguments as String;
           return MaterialPageRoute(
