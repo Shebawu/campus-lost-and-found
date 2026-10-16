@@ -115,7 +115,20 @@ function AdminDashboard() {
             <tbody>
               {claims.map(claim => (
                 <tr key={claim.id} style={{ borderTop: '1px solid #eee' }}>
-                  <td style={{ padding: '12px', fontWeight: 'bold' }}>{claim.item_title}</td>
+                  <td style={{ padding: '12px', fontWeight: 'bold' }}>
+  <a 
+    href={`/items/${claim.item_id}`} 
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ 
+      color: '#007bff', 
+      textDecoration: 'underline',
+      cursor: 'pointer'
+    }}
+  >
+    {claim.item_title} 🔗
+  </a>
+</td>
                   <td style={{ padding: '12px' }}>
                     <div>{claim.claimant_name}</div>
                     <div style={{ fontSize: '12px', color: '#666' }}>{claim.claimant_email}</div>
